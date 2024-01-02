@@ -1,40 +1,3 @@
-# resource "google_storage_bucket" "bucket" {
-#   name     = "go-bigquery-bucket"
-#   location = "US"
-# }
-
-
-
-
-
-# resource "google_cloudfunctions_function" "function" {
-#   name        = "function-test"
-#   description = "My function"
-#   runtime     = "go121"
-
-#   available_memory_mb   = 128
-#   source_archive_bucket = google_storage_bucket.bucket.name
-#   source_archive_object = google_storage_bucket_object.archive.name
-#   trigger_http          = true
-#   entry_point           = "HelloHTTP"
-# }
-
-# # IAM entry for all users to invoke the function
-# resource "google_cloudfunctions_function_iam_member" "invoker" {
-#   project        = google_cloudfunctions_function.function.project
-#   region         = google_cloudfunctions_function.function.region
-#   cloud_function = google_cloudfunctions_function.function.name
-
-#   role   = "roles/cloudfunctions.invoker"
-#   member = "allUsers"
-# }
-
-
-
-
-
-
-
 resource "random_id" "bucket_prefix" {
   byte_length = 8
 }
@@ -96,24 +59,6 @@ resource "google_project_iam_member" "artifactregistry_reader" {
   member     = "serviceAccount:${google_service_account.default.email}"
   depends_on = [google_project_iam_member.event_receiving]
 }
-
-# # ------------------------------
-
-# resource "google_cloudfunctions_function" "function" {
-#   name        = "function-test"
-#   description = "My function"
-#   runtime     = "go121"
-
-#   available_memory_mb   = 128
-#   source_archive_bucket = google_storage_bucket.bucket.name
-#   source_archive_object = google_storage_bucket_object.archive.name
-#   trigger_http          = true
-#   entry_point           = "HelloHTTP"
-# }
-
-# #--------------------------------
-
-
 
 resource "google_cloudfunctions2_function" "default" {
   depends_on = [
