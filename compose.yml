@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  infra:
+    build: 
+      context: .
+      dockerfile: ./container/terraform/Dockerfile
+    volumes:
+      - ./gcp:/infrastructure
+      - gcloud_config:/root/.config/gcloud
+    working_dir: /infrastructure
+    entrypoint: bash
+    tty: true
+  app:
+    build: 
+      context: .
+      dockerfile: ./container/go/Dockerfile
+    volumes:
+      - ./gcp/app:/app
+    tty: true
+
+volumes:
+  gcloud_config:
