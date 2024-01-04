@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/cloudevents/sdk-go/v2/event"
 	"github.com/slack-go/slack"
@@ -53,7 +54,7 @@ type AuditLogjobStatistics struct {
 func helloAuditLog(ctx context.Context, e event.Event) error {
 
 	// アクセストークンを使用してクライアントを生成する
-	tkn := "xoxb-2104976855508-6418489523620-WqOwGqZxj3x3WO7Ce3vQWfY3"
+	tkn := os.Getenv("SLACK_TOKEN")
 	c := slack.New(tkn)
 
 	// Print out details from the CloudEvent itself
