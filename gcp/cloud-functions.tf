@@ -8,14 +8,19 @@ resource "google_storage_bucket" "source_bucket" {
   uniform_bucket_level_access = true
 }
 
+locals {
+  timedate = formatdate("YYMMDDhhmmss", timestamp())
+}
+
 data "archive_file" "function_archive" {
   type        = "zip"
   source_dir  = "app"
-  output_path = "app/action.zip"
+  output_path = format("app/action_%s.zip", local.timedate)
+  
 }
 
 resource "google_storage_bucket_object" "archive" {
-  name   = "action.zip"
+  name   = format("action_%s.zip", local.timedate)
   bucket = google_storage_bucket.source_bucket.name
   source = data.archive_file.function_archive.output_path
 }
@@ -61,6 +66,13 @@ resource "google_project_iam_member" "artifactregistry_reader" {
 }
 
 resource "google_cloudfunctions2_function" "default" {
+
+  lifecycle {
+    replace_triggered_by = [
+      google_storage_bucket_object.archive
+    ]
+  }
+  
   depends_on = [
     google_project_iam_member.event_receiving,
     google_project_iam_member.artifactregistry_reader,
@@ -71,9 +83,9 @@ resource "google_cloudfunctions2_function" "default" {
 
   build_config {
     runtime     = "go121"
-    entry_point = "HelloHTTP" # Set the entry point in the code
+    entry_point = "HelloAuditLog" # Set the entry point in the code
     environment_variables = {
-      BUILD_CONFIG_TEST = "build_test"
+      PROJECT_ID = "bigquery-example-403506"
     }
     source {
       storage_source {
